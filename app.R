@@ -2,11 +2,13 @@
 library(shiny)
 library(shinydashboard)
 library(readr)
+library(dplyr)
 library(leaflet)
 
 # Speaker data ----
 
-speaker_data <- read_csv(file = "speakers/speakers.csv", comment = "#")
+speaker_data <- read_csv(file = "speakers/speakers.csv", comment = "#") %>%
+  mutate(across(c(country, event_type), as.factor))
 
 # Event data ----
 
@@ -18,23 +20,27 @@ ui <- dashboardPage(
   dashboardHeader(title = "Speakers stats"),
   dashboardSidebar(),
   dashboardBody(
-    box(
-      plotOutput("speaker_country_barplot"),
-      title = "Plot",
-      width = 6
+    fluidRow(
+      box(
+        plotOutput("speaker_country_barplot", click = "speaker_country_barplot_click"),
+        title = "Plot",
+        width = 6
+      ),
+      box(
+        leafletOutput("speaker_map"),
+        h4("Legend"),
+        p(strong("Blue markers:"), "events"),
+        title = "Map",
+        width = 6
+      )
     ),
-    box(
-      leafletOutput("speaker_map"),
-      h4("Legend"),
-      p(strong("Blue markers:"), "events"),
-      title = "Map",
-      width = 6
-    ),
-    box(
-      dataTableOutput("speaker_data_table"),
-      title = "Table",
-      width = 12
-    ),
+    fluidRow(
+      box(
+        dataTableOutput("speaker_data_table"),
+        title = "Table",
+        width = 12
+      )
+    )
   )
 )
 
@@ -62,6 +68,11 @@ server <- function(input, output) {
         axis.text = element_text(size = 16),
         axis.title = element_blank()
       )
+  })
+
+  observeEvent(input$speaker_country_barplot_click, {
+    click_country <- levels(speaker_data$country)[round(input$speaker_country_barplot_click$x)]
+    message("Selected country: ", click_country)
   })
 }
 
