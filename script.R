@@ -15,10 +15,12 @@ event_data <- read_csv(file = "events/events.csv", comment = "#", show_col_types
 
 # location of events ----
 
-leaflet() %>%
-  setView(lng = 2.3488, lat = 48.85341, zoom = 4) %>% # Paris: 48.85341 2.3488
-  addTiles() %>%
-  addMarkers(~long, ~lat, label = ~as.character(city), data = lat_longs)
+suppressWarnings(
+  leaflet() %>%
+    setView(lng = 2.3488, lat = 48.85341, zoom = 4) %>% # Paris: 48.85341 2.3488
+    addTiles() %>%
+    addMarkers(~long, ~lat, label = ~as.character(city), data = event_data)
+)
 
 # proportion of speakers from each country ----
 

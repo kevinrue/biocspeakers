@@ -19,17 +19,22 @@ ui <- dashboardPage(
   dashboardSidebar(),
   dashboardBody(
     box(
-      dataTableOutput("speaker_data_table"),
-      title = "Table",
+      plotOutput("speaker_country_barplot"),
+      title = "Plot",
       width = 6
     ),
     box(
       leafletOutput("speaker_map"),
-      p("Blue markers: events"),
+      h4("Legend"),
+      p(strong("Blue markers:"), "events"),
       title = "Map",
-      width = 6,
-      height = 700
-    )
+      width = 6
+    ),
+    box(
+      dataTableOutput("speaker_data_table"),
+      title = "Table",
+      width = 12
+    ),
   )
 )
 
@@ -37,10 +42,26 @@ server <- function(input, output) {
   output$speaker_data_table <- renderDataTable(speaker_data)
 
   output$speaker_map <- renderLeaflet({
-    leaflet() %>%
-      setView(lng = 2.3488, lat = 48.85341, zoom = 4) %>% # Paris: 48.85341 2.3488
-      addTiles() %>%
-      addMarkers(~long, ~lat, label = ~as.character(city), data = lat_longs)
+    suppressWarnings(
+      leaflet() %>%
+        setView(lng = 2.3488, lat = 48.85341, zoom = 4) %>% # Paris: 48.85341 2.3488
+        addTiles() %>%
+        addMarkers(~long, ~lat, label = ~as.character(city), data = event_data)
+    )
+  })
+
+  output$speaker_country_barplot <- renderPlot({
+    ggplot(speaker_data) +
+      geom_bar(aes(country, fill = country)) +
+      guides(
+        fill = "none"
+      ) +
+      theme_bw() +
+      theme(
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+        axis.text = element_text(size = 16),
+        axis.title = element_blank()
+      )
   })
 }
 
