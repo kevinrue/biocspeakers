@@ -1,13 +1,22 @@
 first_last,institution,country,position,event_type,year,event_role,gender
 # eurobioc2023
-Franka Voigt,University of Zurich,Switzerland,Assistant Professor,EuroBioC,keynote,2023,female
-Emma Schymanski,University of Luxembourg,Luxembourg,Associate Professor,EuroBioC,keynote,2023,female
-Raphael Gottardo,University of Lausanne,Switzerland,Professor,EuroBioC,keynote,2023,male
-Yvan Saeys,Ghent University,Belgium,Professor,EuroBioC,keynote,2023,male
-Isaac Virshup,Helmholtz Munich,Software Engineer,EuroBioC,keynote,2023,male
-# euronbioc2022
-Shila Ghazanfar,The University of Sydney,Australia,Research Associate,EuroBioC,keynote,2022,female
-Michael Dorrity,EMBL,Germany,Group Leader,EuroBioC,keynote,2022,male
-Judith Zaugg,EMBL,Germany,Group Leader,EuroBioC,keynote,2022,female
-Björn Grüning,University of Freiburg,Galaxy team leader,Germany,EuroBioC,keynote,2022,male
-Julio Saez-Rodriguez,Heidelberg University,Germany,Group leader,EuroBioC,keynote,2022,male
+Franka Voigt,University of Zurich,Switzerland,Assistant Professor,EuroBioC,2023,keynote,female
+Emma Schymanski,University of Luxembourg,Luxembourg,Associate Professor,EuroBioC,2023,keynote,female
+Raphael Gottardo,University of Lausanne,Switzerland,Professor,EuroBioC,2023,keynote,male
+Yvan Saeys,Ghent University,Belgium,Professor,EuroBioC,2023,keynote,male
+Isaac Virshup,Helmholtz Munich,Germany,Software Engineer,EuroBioC,2023,keynote,male
+# eurobioc2022
+Shila Ghazanfar,The University of Sydney,Australia,Research Associate,EuroBioC,2022,keynote,female
+Michael Dorrity,EMBL,Germany,Group Leader,EuroBioC,2022,keynote,male
+Judith Zaugg,EMBL,Germany,Group Leader,EuroBioC,2022,keynote,female
+Björn Grüning,University of Freiburg,Galaxy team leader,Germany,EuroBioC,2022,keynote,male
+Julio Saez-Rodriguez,Heidelberg University,Germany,Group leader,EuroBioC,2022,keynote,male
+# eurobioc2020
+Sehyun Oh,The City University of New York,USA,Postdoctoral fellow,EuroBioC,2020,keynote,female
+Holger Heyn,CNAG-CRG,Spain,Team leader,EuroBioC,2020,keynote,male
+Henrik Bengtsson,UCSF,USA,Associate Professor,EuroBioC,2020,keynote,male
+Monica Chiogna,University of Bologna,Italy,Professor,EuroBioC,2020,keynote,female
+Luke Zappia,Helmholtz Zentrum München,Germany,Postdoctoral researcher,EuroBioC,2020,keynote,male
+Britta Velten,German Cancer Research Center,Germany,Postdoctoral researcher,EuroBioC,2020,keynote,female
+Elsa Bernard,Memorial Sloan Kettering Cancer Center,USA,Research fellow,EuroBioC,2020,keynote,female
+Nicola Segata,University of Trento,Italy,Associate Professor,EuroBioC,2020,keynote,male
