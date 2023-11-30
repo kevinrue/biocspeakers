@@ -3,16 +3,18 @@ library(shiny)
 library(shinydashboard)
 library(readr)
 library(dplyr)
+library(DT)
 library(leaflet)
 
 # Speaker data ----
 
-speaker_data <- read_csv(file = "speakers/speakers.csv", comment = "#") %>%
-  mutate(across(c(country, event_type), as.factor))
+speaker_data <- read_csv(file = "speakers/speakers.csv", comment = "#", show_col_types = FALSE) %>%
+  mutate(across(c(first_last, institution, country, position, event_type, year, event_role, gender), as.factor))
 
 # Event data ----
 
-event_data <- read_csv(file = "events/events.csv", comment = "#")
+event_data <- read_csv(file = "events/events.csv", comment = "#", show_col_types = FALSE) %>%
+  mutate(across(c(event_type, year, city, country), as.factor))
 
 # App ----
 
@@ -23,6 +25,7 @@ ui <- dashboardPage(
     fluidRow(
       box(
         plotOutput("speaker_country_barplot", click = "speaker_country_barplot_click"),
+        uiOutput("speaker_country_selected"),
         title = "Plot",
         width = 6
       ),
@@ -45,16 +48,9 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output) {
-  output$speaker_data_table <- renderDataTable(speaker_data)
-
-  output$speaker_map <- renderLeaflet({
-    suppressWarnings(
-      leaflet() %>%
-        setView(lng = 2.3488, lat = 48.85341, zoom = 4) %>% # Paris: 48.85341 2.3488
-        addTiles() %>%
-        addMarkers(~long, ~lat, label = ~as.character(city), data = event_data)
-    )
-  })
+  reactive_values <- reactiveValues(
+    selected_countries = character(0)
+  )
 
   output$speaker_country_barplot <- renderPlot({
     ggplot(speaker_data) +
@@ -70,9 +66,40 @@ server <- function(input, output) {
       )
   })
 
+  output$speaker_country_selected <- renderUI({
+    selected_countries <- reactive_values[["selected_countries"]]
+    if (length(selected_countries)) {
+      p(strong("Selected countries: "), paste(reactive_values[["selected_countries"]], collapse = " "))
+    } else {
+      p("Click countries to (un)select them.")
+    }
+  })
+
+  output$speaker_map <- renderLeaflet({
+    suppressWarnings(
+      leaflet() %>%
+        setView(lng = 2.3488, lat = 48.85341, zoom = 4) %>% # Paris: 48.85341 2.3488
+        addTiles() %>%
+        addMarkers(~long, ~lat, label = ~as.character(city), data = event_data)
+    )
+  })
+
+  output$speaker_data_table <- renderDT(
+    datatable(
+      speaker_data,
+      filter = "top"
+    )
+  )
+
   observeEvent(input$speaker_country_barplot_click, {
     click_country <- levels(speaker_data$country)[round(input$speaker_country_barplot_click$x)]
-    message("Selected country: ", click_country)
+    selected_countries <- reactive_values[["selected_countries"]]
+    if (click_country %in% selected_countries) {
+      selected_countries <- setdiff(selected_countries, click_country)
+    } else {
+      selected_countries <- sort(c(selected_countries, click_country))
+    }
+    reactive_values[["selected_countries"]] <- selected_countries
   })
 }
 
