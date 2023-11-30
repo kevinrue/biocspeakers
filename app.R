@@ -84,12 +84,19 @@ server <- function(input, output) {
     )
   })
 
-  output$speaker_data_table <- renderDT(
+  output$speaker_data_table <- renderDT({
+    speaker_data_filtered <- speaker_data
+    selected_countries <- reactive_values[["selected_countries"]]
+    if (length(selected_countries)) {
+      speaker_data_filtered <- speaker_data_filtered %>%
+        filter(country %in% selected_countries) %>%
+        mutate(country = factor(country, unique(country)))
+    }
     datatable(
-      speaker_data,
+      speaker_data_filtered,
       filter = "top"
     )
-  )
+  })
 
   observeEvent(input$speaker_country_barplot_click, {
     click_country <- levels(speaker_data$country)[round(input$speaker_country_barplot_click$x)]
