@@ -5,8 +5,13 @@ library(readr)
 
 # Speaker data ----
 
-speaker_data <- read.csv(file = "speakers.csv", comment.char = "#")
+speaker_data <- read_csv(file = "speakers/speakers.csv", comment = "#")
 
+# Event data ----
+
+event_data <- read_csv(file = "events/events.csv", comment = "#")
+
+# App ----
 
 ui <- dashboardPage(
   dashboardHeader(title = "Speakers stats"),
