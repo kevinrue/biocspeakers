@@ -25,6 +25,7 @@ ui <- dashboardPage(
     ),
     box(
       leafletOutput("speaker_map"),
+      p("Blue markers: events"),
       title = "Map",
       width = 6,
       height = 700
@@ -38,7 +39,8 @@ server <- function(input, output) {
   output$speaker_map <- renderLeaflet({
     leaflet() %>%
       setView(lng = 2.3488, lat = 48.85341, zoom = 4) %>% # Paris: 48.85341 2.3488
-      addTiles()
+      addTiles() %>%
+      addMarkers(~long, ~lat, label = ~as.character(city), data = lat_longs)
   })
 }
 
