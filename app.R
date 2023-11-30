@@ -12,9 +12,6 @@ ui <- dashboardPage(
   dashboardHeader(title = "Speakers stats"),
   dashboardSidebar(),
   dashboardBody(
-    # fluidRow(
-    #   column(width = 12, dataTableOutput("speaker_data_table"))
-    # )
     box(
       dataTableOutput("speaker_data_table"),
       title = "Table",
