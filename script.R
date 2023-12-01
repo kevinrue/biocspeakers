@@ -12,6 +12,15 @@ speaker_data <- read_csv(file = "speakers/speakers.csv", comment = "#", show_col
 event_data <- read_csv(file = "events/events.csv", comment = "#", show_col_types = FALSE) %>%
   mutate(across(c(event_type, year, city, country), as.factor))
 
+# annotate speaker info with event info ----
+
+speaker_data <- speaker_data %>%
+  left_join(
+    event_data %>%
+      select(country, event_type, year) %>%
+      rename("event_country" = "country"),
+    by = c("event_type", "year"))
+
 # get lat/long manually and save to avoid waiting each time
 # event_data %>%
 #   geocode(city = city, method = 'osm')
