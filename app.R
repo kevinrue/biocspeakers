@@ -6,6 +6,7 @@ library(leaflet)
 library(readr)
 library(shiny)
 library(shinydashboard)
+library(tidyr)
 
 source("functions.R")
 
@@ -27,6 +28,16 @@ speaker_data <- speaker_data %>%
       select(country, event_type, year) %>%
       rename("event_country" = "country"),
     by = c("event_type", "year"))
+
+# join speaker countries to event data ----
+
+event_data <- event_data %>%
+  left_join(
+    speaker_data %>%
+      select(country, event_type, year) %>%
+      rename("speaker_country" = "country"),
+    by = c("event_type", "year")
+  )
 
 # Choices ----
 
@@ -89,7 +100,10 @@ server <- function(input, output) {
     if (identical(plot_type, "speakers")) {
       gg <- speakers_barplot(speaker_data, reactive_values[["selected_speaker_countries"]])
     } else if (identical(plot_type, "events")) {
-      gg <- events_barplot(event_data, reactive_values[["selected_event_countries"]])
+      gg <- events_barplot(event_data,
+        speaker_countries = reactive_values[["selected_speaker_countries"]],
+        event_countries = reactive_values[["selected_event_countries"]]
+      )
     }
     gg
   })
@@ -131,7 +145,11 @@ server <- function(input, output) {
     selected_event_countries <- reactive_values[["selected_event_countries"]]
     speaker_data_filtered <- filter_country(speaker_data_filtered, selected_speaker_countries)
     speaker_data_filtered <- filter_event_countries(speaker_data_filtered, selected_event_countries)
-    event_data_filtered <- filter_country(event_data_filtered, selected_event_countries)
+    event_data_filtered <- filter_country(event_data_filtered, selected_event_countries) %>%
+      filter_speaker_countries(selected_speaker_countries) %>%
+      select(city, lat, long, country) %>%
+      unique() %>%
+      unite("label", city, country, sep = ", ")
     suppressWarnings(
       leaflet() %>%
         setView(
@@ -140,7 +158,7 @@ server <- function(input, output) {
           zoom = reactive_values$leaflet_map_zoom
         ) %>%
         addTiles() %>%
-        addMarkers(~long, ~lat, label = ~as.character(city), data = event_data_filtered) %>%
+        addMarkers(~long, ~lat, label = ~label, data = event_data_filtered) %>%
         addCircleMarkers(~long, ~lat, radius = 2, label = ~as.character(institution), data = speaker_data_filtered)
     )
   })

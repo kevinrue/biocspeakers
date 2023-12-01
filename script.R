@@ -21,6 +21,16 @@ speaker_data <- speaker_data %>%
       rename("event_country" = "country"),
     by = c("event_type", "year"))
 
+# join speaker countries to event data ----
+
+event_data <- event_data %>%
+  left_join(
+    speaker_data %>%
+      select(country, event_type, year) %>%
+      rename("speaker_country" = "country"),
+    by = c("event_type", "year")
+  )
+
 # get lat/long manually and save to avoid waiting each time
 # event_data %>%
 #   geocode(city = city, method = 'osm')
@@ -94,4 +104,33 @@ ggplot(event_data_plot) +
     axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
     axis.text = element_text(size = 16),
     axis.title = element_blank()
+  )
+
+
+#
+
+speaker_countries <- c("Switzerland")
+event_countries <- c("Belgium")
+
+event_data_plot_all <- event_data %>%
+  select(country, event_type, year) %>%
+  unique()
+
+event_data_plot_speakers <- event_data %>%
+  filter(speaker_country %in% speaker_countries) %>%
+  select(country, event_type, year) %>%
+  unique() %>%
+  mutate(
+    selected_event_country = factor(country %in% event_countries)
+  )
+
+ggplot() +
+  geom_bar(aes(country, fill = country), event_data_plot_all, alpha = 0.25, color = "grey") +
+  geom_bar(aes(country, fill = country, alpha = selected_event_country, color = selected_event_country), event_data_plot_speakers) +
+  scale_alpha_manual(values = c("FALSE" = 0.25, "TRUE" = 1)) +
+  scale_color_manual(values = c("FALSE" = "grey", "TRUE" = "black")) +
+  guides(
+    fill = "none",
+    alpha = "none",
+    color = "none"
   )

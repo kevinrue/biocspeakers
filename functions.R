@@ -16,6 +16,15 @@ filter_event_countries <- function(x, selected) {
   x
 }
 
+filter_speaker_countries <- function(x, selected) {
+  if (length(selected)) {
+    x <- x %>%
+      filter(speaker_country %in% selected) %>%
+      mutate(country = factor(country, unique(country)))
+  }
+  x
+}
+
 speakers_barplot <- function(data, countries) {
   selected_speaker_countries <- countries
   speaker_data_plot <- data
@@ -52,16 +61,27 @@ speakers_barplot <- function(data, countries) {
     )
 }
 
-events_barplot <- function(data, countries) {
-  selected_event_countries <- countries
-  event_data_plot <- data
-  if (length(selected_event_countries)) {
-    event_data_plot <- event_data_plot %>%
-      mutate(
-        selected = factor(country %in% selected_event_countries)
-      )
-    gg <- ggplot(event_data_plot) +
-      geom_bar(aes(country, fill = country, alpha = selected, color = selected)) +
+events_barplot <- function(data, speaker_countries, event_countries) {
+  event_data_plot_all <- data %>%
+    select(country, event_type, year) %>%
+    unique()
+  if (!length(speaker_countries)) {
+    speaker_countries <- levels(data[["speaker_country"]])
+  }
+  if (!length(event_countries)) {
+    event_countries <- levels(data[["country"]])
+  }
+  event_data_plot_speakers <- data %>%
+    filter(speaker_country %in% speaker_countries) %>%
+    select(country, event_type, year) %>%
+    unique() %>%
+    mutate(
+      selected_event_country = factor(country %in% event_countries)
+    )
+  if (length(event_countries) || length(speaker_countries)) {
+    gg <- ggplot() +
+      geom_bar(aes(country, fill = country), event_data_plot_all, alpha = 0.25, color = "grey") +
+      geom_bar(aes(country, fill = country, alpha = selected_event_country, color = selected_event_country), event_data_plot_speakers) +
       scale_alpha_manual(values = c("FALSE" = 0.25, "TRUE" = 1)) +
       scale_color_manual(values = c("FALSE" = "grey", "TRUE" = "black")) +
       guides(
@@ -70,7 +90,7 @@ events_barplot <- function(data, countries) {
         color = "none"
       )
   } else {
-    gg <- ggplot(event_data_plot) +
+    gg <- ggplot(event_data_plot_all) +
       geom_bar(aes(country, fill = country)) +
       guides(
         fill = "none"
