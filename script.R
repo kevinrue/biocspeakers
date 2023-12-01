@@ -16,8 +16,8 @@ event_data <- read_csv(file = "events/events.csv", comment = "#", show_col_types
 # event_data %>%
 #   geocode(city = city, method = 'osm')
 
-speaker_data %>%
-  geocode(address = institution, method = 'osm')
+# speaker_data %>%
+#   geocode(address = institution, method = 'osm')
 
 # location of events ----
 
@@ -47,6 +47,31 @@ speaker_data_plot <- speaker_data %>%
   )
 
 ggplot(speaker_data_plot) +
+  geom_bar(aes(country, fill = country, alpha = selected, color = selected)) +
+  scale_alpha_manual(values = c("FALSE" = 0.25, "TRUE" = 1)) +
+  scale_color_manual(values = c("FALSE" = "grey", "TRUE" = "black")) +
+  guides(
+    fill = "none",
+    alpha = "none",
+    color = "none"
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+    axis.text = element_text(size = 16),
+    axis.title = element_blank()
+  )
+
+# proportion of events in each country ----
+
+selected_countries <- c("Belgium")
+
+event_data_plot <- event_data %>%
+  mutate(
+    selected = factor(country %in% selected_countries)
+  )
+
+ggplot(event_data_plot) +
   geom_bar(aes(country, fill = country, alpha = selected, color = selected)) +
   scale_alpha_manual(values = c("FALSE" = 0.25, "TRUE" = 1)) +
   scale_color_manual(values = c("FALSE" = "grey", "TRUE" = "black")) +
