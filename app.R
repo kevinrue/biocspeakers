@@ -1,15 +1,16 @@
 ## app.R ##
-library(shiny)
-library(shinydashboard)
-library(readr)
 library(dplyr)
 library(DT)
+library(ggplot2)
 library(leaflet)
+library(readr)
+library(shiny)
+library(shinydashboard)
 
 # Speaker data ----
 
 speaker_data <- read_csv(file = "speakers/speakers.csv", comment = "#", show_col_types = FALSE) %>%
-  mutate(across(c(first_last, institution, country, position, event_type, year, event_role, gender), as.factor))
+  mutate(across(c(institution, country, position, event_type, year, event_role, gender), as.factor))
 
 # Event data ----
 
@@ -110,6 +111,8 @@ server <- function(input, output) {
   })
 }
 
-app <- shinyApp(ui, server)
+shinyApp(ui, server)
+
+# app <- shinyApp(ui, server)
 # shiny::runApp(app)
-shiny::runApp(app, launch.browser = TRUE)
+# shiny::runApp(app, launch.browser = TRUE)

@@ -1,0 +1,13 @@
+name: biocspeakers
+title: biocspeakers
+username: isee
+account: isee
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 10687767
+bundleId: 7993785
+url: https://isee.shinyapps.io/biocspeakers/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rprofile|renv.lock|script.R
