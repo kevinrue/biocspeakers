@@ -10,7 +10,7 @@ library(shinydashboard)
 # Speaker data ----
 
 speaker_data <- read_csv(file = "speakers/speakers.csv", comment = "#", show_col_types = FALSE) %>%
-  mutate(across(c(institution, country, position, event_type, year, event_role, gender), as.factor))
+  mutate(across(c(country, position, event_type, year, event_role, gender), as.factor))
 
 # Event data ----
 
@@ -100,7 +100,8 @@ server <- function(input, output) {
       leaflet() %>%
         setView(lng = 2.3488, lat = 48.85341, zoom = 4) %>% # Paris: 48.85341 2.3488
         addTiles() %>%
-        addMarkers(~long, ~lat, label = ~as.character(city), data = event_data)
+        addMarkers(~long, ~lat, label = ~as.character(city), data = event_data) %>%
+        addCircleMarkers(~long, ~lat, radius = 2, label = ~as.character(institution), data = speaker_data)
     )
   })
 
@@ -130,7 +131,13 @@ server <- function(input, output) {
   })
 }
 
-shinyApp(ui, server)
+app <- shinyApp(ui, server)
+
+if (interactive()) {
+  shiny::runApp(app, launch.browser = TRUE)
+} else {
+  app
+}
 
 # app <- shinyApp(ui, server)
 # shiny::runApp(app)
