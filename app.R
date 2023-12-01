@@ -47,7 +47,9 @@ plot_types <- c("Speakers" = "speakers", "Events" = "events")
 
 ui <- dashboardPage(
   dashboardHeader(title = "Speakers stats"),
-  dashboardSidebar(),
+  dashboardSidebar(
+    actionButton("reset", "Reset selections", icon = icon("refresh"), width = "80%")
+  ),
   dashboardBody(
     fluidRow(
       box(
@@ -179,6 +181,11 @@ server <- function(input, output) {
   })
 
   # observeEvent ----
+
+  observeEvent(input[["reset"]], {
+    reactive_values[["selected_event_countries"]] <- character(0)
+    reactive_values[["selected_speaker_countries"]] <- character(0)
+  })
 
   observeEvent(input[["barplot_click"]], {
     if (identical(input[["plot_type"]], "speakers")) {
