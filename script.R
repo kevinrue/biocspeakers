@@ -1,7 +1,8 @@
-library(readr)
-library(leaflet)
-library(tidygeocoder)
+library(dplyr)
 library(ggplot2)
+library(leaflet)
+library(readr)
+library(tidygeocoder)
 
 # import data ----
 
@@ -24,10 +25,25 @@ suppressWarnings(
 
 # proportion of speakers from each country ----
 
-ggplot(speaker_data) +
-  geom_bar(aes(country, fill = country)) +
+selected_countries <- c("Italy", "Spain")
+
+speaker_data_plot <- speaker_data %>%
+  mutate(
+    selected = factor(country %in% selected_countries)
+  )
+
+ggplot(speaker_data_plot) +
+  geom_bar(aes(country, fill = country, alpha = selected, color = selected)) +
+  scale_alpha_manual(values = c("FALSE" = 0.25, "TRUE" = 1)) +
+  scale_color_manual(values = c("FALSE" = "grey", "TRUE" = "black")) +
+  guides(
+    fill = "none",
+    alpha = "none",
+    color = "none"
+  ) +
   theme_bw() +
   theme(
     axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+    axis.text = element_text(size = 16),
     axis.title = element_blank()
   )

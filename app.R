@@ -54,11 +54,30 @@ server <- function(input, output) {
   )
 
   output$speaker_country_barplot <- renderPlot({
-    ggplot(speaker_data) +
-      geom_bar(aes(country, fill = country)) +
-      guides(
-        fill = "none"
-      ) +
+    selected_countries <- reactive_values[["selected_countries"]]
+    speaker_data_plot <- speaker_data
+    if (length(selected_countries)) {
+      speaker_data_plot <- speaker_data_plot %>%
+        mutate(
+          selected = factor(country %in% selected_countries)
+        )
+      gg <- ggplot(speaker_data_plot) +
+        geom_bar(aes(country, fill = country, alpha = selected, color = selected)) +
+        scale_alpha_manual(values = c("FALSE" = 0.25, "TRUE" = 1)) +
+        scale_color_manual(values = c("FALSE" = "grey", "TRUE" = "black")) +
+        guides(
+          fill = "none",
+          alpha = "none",
+          color = "none"
+        )
+    } else {
+      gg <- ggplot(speaker_data_plot) +
+        geom_bar(aes(country, fill = country)) +
+        guides(
+          fill = "none"
+        )
+    }
+    gg +
       theme_bw() +
       theme(
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
