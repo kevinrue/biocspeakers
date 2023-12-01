@@ -33,7 +33,7 @@ ui <- dashboardPage(
         width = 6
       ),
       box(
-        leafletOutput("speaker_map"),
+        leafletOutput("leaflet_map"),
         h4("Legend"),
         p(strong("Blue markers:"), "events"),
         title = "Map",
@@ -51,8 +51,14 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output) {
+  # Paris: 48.85341 2.3488
   reactive_values <- reactiveValues(
-    selected_countries = character(0)
+    selected_countries = character(0),
+    leaflet_map_center = list(
+      lng = 2.3488,
+      lat = 48.86471
+    ),
+    leaflet_map_zoom = 4L
   )
 
   output$speaker_country_barplot <- renderPlot({
@@ -97,13 +103,20 @@ server <- function(input, output) {
     }
   })
 
-  output$speaker_map <- renderLeaflet({
+  output$leaflet_map <- renderLeaflet({
+    speaker_data_filtered <- speaker_data
+    selected_speaker_countries <- reactive_values[["selected_countries"]]
+    speaker_data_filtered <- filter_selected_countries(speaker_data_filtered, selected_speaker_countries)
     suppressWarnings(
       leaflet() %>%
-        setView(lng = 2.3488, lat = 48.85341, zoom = 4) %>% # Paris: 48.85341 2.3488
+        setView(
+          lng = reactive_values$leaflet_map_center$lng,
+          lat = reactive_values$leaflet_map_center$lat,
+          zoom = reactive_values$leaflet_map_zoom
+        ) %>%
         addTiles() %>%
         addMarkers(~long, ~lat, label = ~as.character(city), data = event_data) %>%
-        addCircleMarkers(~long, ~lat, radius = 2, label = ~as.character(institution), data = speaker_data)
+        addCircleMarkers(~long, ~lat, radius = 2, label = ~as.character(institution), data = speaker_data_filtered)
     )
   })
 
@@ -126,6 +139,14 @@ server <- function(input, output) {
       selected_countries <- sort(c(selected_countries, click_country))
     }
     reactive_values[["selected_countries"]] <- selected_countries
+  })
+
+  observeEvent(input$leaflet_map_center, {
+    reactive_values$leaflet_map_center <- input$leaflet_map_center
+  })
+
+  observeEvent(input$leaflet_map_zoom, {
+    reactive_values$leaflet_map_zoom <- input$leaflet_map_zoom
   })
 }
 
