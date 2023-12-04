@@ -1,8 +1,8 @@
-filter_country <- function(x, selected) {
+filter_person_country <- function(x, selected) {
   if (length(selected)) {
     x <- x %>%
-      filter(country %in% selected) %>%
-      mutate(country = factor(country, unique(country)))
+      filter(person_country %in% selected) %>%
+      mutate(person_country = factor(person_country, unique(person_country)))
   }
   x
 }
@@ -11,16 +11,16 @@ filter_event_countries <- function(x, selected) {
   if (length(selected)) {
     x <- x %>%
       filter(event_country %in% selected) %>%
-      mutate(country = factor(country, unique(country)))
+      mutate(event_country = factor(event_country, unique(event_country)))
   }
   x
 }
 
-filter_speaker_countries <- function(x, selected) {
+filter_person_countries <- function(x, selected) {
   if (length(selected)) {
     x <- x %>%
-      filter(speaker_country %in% selected) %>%
-      mutate(country = factor(country, unique(country)))
+      filter(person_country %in% selected) %>%
+      mutate(person_country = factor(person_country, unique(person_country)))
   }
   x
 }
@@ -28,25 +28,25 @@ filter_speaker_countries <- function(x, selected) {
 speakers_barplot <- function(data, speaker_countries, event_countries) {
   speaker_data_all <- data %>%
     mutate(
-      selected = factor(country %in% speaker_countries)
+      selected = factor(person_country %in% speaker_countries)
     )
   if (!length(speaker_countries)) {
-    speaker_countries <- levels(data[["country"]])
+    speaker_countries <- levels(data[["person_country"]])
   }
   if (!length(event_countries)) {
     event_countries <- levels(data[["event_country"]])
   }
   speaker_data_filtered <- data %>%
     filter(event_country %in% event_countries) %>%
-    select(country, first_last) %>%
+    select(person_country, person_name) %>%
     unique() %>%
     mutate(
-      selected_speaker_country = factor(country %in% speaker_countries)
+      selected_speaker_country = factor(person_country %in% speaker_countries)
     )
   if (length(speaker_countries) || length(event_countries)) {
     gg <- ggplot() +
-      geom_bar(aes(country, fill = country), speaker_data_all, alpha = 0.25, color = "grey") +
-      geom_bar(aes(country, fill = country, alpha = selected_speaker_country, color = selected_speaker_country), speaker_data_filtered) +
+      geom_bar(aes(person_country, fill = person_country), speaker_data_all, alpha = 0.25, color = "grey") +
+      geom_bar(aes(person_country, fill = person_country, alpha = selected_speaker_country, color = selected_speaker_country), speaker_data_filtered) +
       scale_alpha_manual(values = c("FALSE" = 0.25, "TRUE" = 1)) +
       scale_color_manual(values = c("FALSE" = "grey", "TRUE" = "black")) +
       guides(
@@ -56,7 +56,7 @@ speakers_barplot <- function(data, speaker_countries, event_countries) {
       )
   } else {
     gg <- ggplot(speaker_data_all) +
-      geom_bar(aes(country, fill = country)) +
+      geom_bar(aes(person_country, fill = person_country)) +
       guides(
         fill = "none"
       )
@@ -75,25 +75,26 @@ speakers_barplot <- function(data, speaker_countries, event_countries) {
 
 events_barplot <- function(data, speaker_countries, event_countries) {
   event_data_plot_all <- data %>%
-    select(country, event_type, year) %>%
+    select(event_country, event_type, event_year) %>%
     unique()
+  print(event_data_plot_all)
   if (!length(speaker_countries)) {
-    speaker_countries <- levels(data[["speaker_country"]])
+    speaker_countries <- levels(data[["person_country"]])
   }
   if (!length(event_countries)) {
-    event_countries <- levels(data[["country"]])
+    event_countries <- levels(data[["event_country"]])
   }
   event_data_plot_speakers <- data %>%
-    filter(speaker_country %in% speaker_countries) %>%
-    select(country, event_type, year) %>%
+    filter(person_country %in% speaker_countries) %>%
+    select(event_country, event_type, event_year) %>%
     unique() %>%
     mutate(
-      selected_event_country = factor(country %in% event_countries)
+      selected_event_country = factor(event_country %in% event_countries)
     )
   if (length(event_countries) || length(speaker_countries)) {
     gg <- ggplot() +
-      geom_bar(aes(country, fill = country), event_data_plot_all, alpha = 0.25, color = "grey") +
-      geom_bar(aes(country, fill = country, alpha = selected_event_country, color = selected_event_country), event_data_plot_speakers) +
+      geom_bar(aes(event_country, fill = event_country), event_data_plot_all, alpha = 0.25, color = "grey") +
+      geom_bar(aes(event_country, fill = event_country, alpha = selected_event_country, color = selected_event_country), event_data_plot_speakers) +
       scale_alpha_manual(values = c("FALSE" = 0.25, "TRUE" = 1)) +
       scale_color_manual(values = c("FALSE" = "grey", "TRUE" = "black")) +
       guides(
@@ -103,7 +104,7 @@ events_barplot <- function(data, speaker_countries, event_countries) {
       )
   } else {
     gg <- ggplot(event_data_plot_all) +
-      geom_bar(aes(country, fill = country)) +
+      geom_bar(aes(event_country, fill = event_country)) +
       guides(
         fill = "none"
       )

@@ -1,4 +1,4 @@
-first_last,institution,country,position,event_type,year,event_role,gender,lat,long
+person_name,person_institution,person_country,person_position,event_type,event_year,person_role,person_gender,person_lat,person_long
 # eurobioc2023
 Franka Voigt,University of Zurich,Switzerland,Assistant Professor,EuroBioC,2023,keynote,female,47.5,8.73
 Emma Schymanski,University of Luxembourg,Luxembourg,Associate Professor,EuroBioC,2023,keynote,female,49.5,5.95

@@ -13,30 +13,28 @@ source("functions.R")
 # Speaker data ----
 
 speaker_data <- read_csv(file = "speakers/speakers.csv", comment = "#", show_col_types = FALSE) %>%
-  mutate(across(c(country, position, event_type, year, event_role, gender), as.factor))
+  mutate(across(c(person_country, person_position, event_type, event_year, person_role, person_gender), as.factor))
 
 # Event data ----
 
 event_data <- read_csv(file = "events/events.csv", comment = "#", show_col_types = FALSE) %>%
-  mutate(across(c(event_type, year, city, country), as.factor))
+  mutate(across(c(event_type, event_year, event_city, event_country), as.factor))
 
 # join event country to speaker data ----
 
 speaker_data <- speaker_data %>%
   left_join(
     event_data %>%
-      select(country, event_type, year) %>%
-      rename("event_country" = "country"),
-    by = c("event_type", "year"))
+      select(event_country, event_type, event_year),
+    by = c("event_type", "event_year"))
 
 # join speaker countries to event data ----
 
 event_data <- event_data %>%
   left_join(
     speaker_data %>%
-      select(country, event_type, year) %>%
-      rename("speaker_country" = "country"),
-    by = c("event_type", "year")
+      select(person_country, event_type, event_year),
+    by = c("event_type", "event_year")
   )
 
 # Choices ----
@@ -148,13 +146,13 @@ server <- function(input, output) {
     event_data_filtered <- event_data
     selected_speaker_countries <- reactive_values[["selected_speaker_countries"]]
     selected_event_countries <- reactive_values[["selected_event_countries"]]
-    speaker_data_filtered <- filter_country(speaker_data_filtered, selected_speaker_countries)
+    speaker_data_filtered <- filter_person_countries(speaker_data_filtered, selected_speaker_countries)
     speaker_data_filtered <- filter_event_countries(speaker_data_filtered, selected_event_countries)
-    event_data_filtered <- filter_country(event_data_filtered, selected_event_countries) %>%
-      filter_speaker_countries(selected_speaker_countries) %>%
-      select(city, lat, long, country) %>%
+    event_data_filtered <- filter_event_countries(event_data_filtered, selected_event_countries) %>%
+      filter_person_countries(selected_speaker_countries) %>%
+      select(event_city, event_lat, event_long, event_country) %>%
       unique() %>%
-      unite("label", city, country, sep = ", ")
+      unite("label", event_city, event_country, sep = ", ")
     suppressWarnings(
       leaflet() %>%
         setView(
@@ -163,8 +161,8 @@ server <- function(input, output) {
           zoom = reactive_values$leaflet_map_zoom
         ) %>%
         addTiles() %>%
-        addMarkers(~long, ~lat, label = ~label, data = event_data_filtered) %>%
-        addCircleMarkers(~long, ~lat, radius = 2, label = ~as.character(institution), data = speaker_data_filtered)
+        addMarkers(~event_long, ~event_lat, label = ~label, data = event_data_filtered) %>%
+        addCircleMarkers(~person_long, ~person_lat, radius = 2, label = ~as.character(person_institution), data = speaker_data_filtered)
     )
   })
 
@@ -172,10 +170,10 @@ server <- function(input, output) {
 
   output$speaker_data_table <- renderDT({
     speaker_data_filtered <- speaker_data %>%
-      select(-c(lat, long))
+      select(-c(person_lat, person_long))
     selected_speaker_countries <- reactive_values[["selected_speaker_countries"]]
     selected_event_countries <- reactive_values[["selected_event_countries"]]
-    speaker_data_filtered <- filter_country(speaker_data_filtered, selected_speaker_countries)
+    speaker_data_filtered <- filter_person_countries(speaker_data_filtered, selected_speaker_countries)
     speaker_data_filtered <- filter_event_countries(speaker_data_filtered, selected_event_countries)
     datatable(
       speaker_data_filtered,
@@ -192,7 +190,7 @@ server <- function(input, output) {
 
   observeEvent(input[["barplot_click"]], {
     if (identical(input[["plot_type"]], "speakers")) {
-      click_country <- levels(speaker_data$country)[round(input$barplot_click$x)]
+      click_country <- levels(speaker_data[["person_country"]])[round(input$barplot_click$x)]
       selected_speaker_countries <- reactive_values[["selected_speaker_countries"]]
       if (click_country %in% selected_speaker_countries) {
         selected_speaker_countries <- setdiff(selected_speaker_countries, click_country)
@@ -201,7 +199,7 @@ server <- function(input, output) {
       }
       reactive_values[["selected_speaker_countries"]] <- selected_speaker_countries
     } else if (identical(input[["plot_type"]], "events")) {
-      click_country <- levels(event_data$country)[round(input$barplot_click$x)]
+      click_country <- levels(event_data[["event_country"]])[round(input$barplot_click$x)]
       selected_event_countries <- reactive_values[["selected_event_countries"]]
       if (click_country %in% selected_event_countries) {
         selected_event_countries <- setdiff(selected_event_countries, click_country)
