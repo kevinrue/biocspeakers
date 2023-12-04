@@ -77,7 +77,6 @@ events_barplot <- function(data, speaker_countries, event_countries) {
   event_data_plot_all <- data %>%
     select(event_country, event_type, event_year) %>%
     unique()
-  print(event_data_plot_all)
   if (!length(speaker_countries)) {
     speaker_countries <- levels(data[["person_country"]])
   }
