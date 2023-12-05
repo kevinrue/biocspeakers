@@ -150,8 +150,8 @@ server <- function(input, output) {
   # leaflet map ----
 
   output$leaflet_map <- renderLeaflet({
-    speaker_data_filtered <- speaker_data
-    event_data_filtered <- event_data
+    speaker_data_filtered <- people_event_data
+    event_data_filtered <- people_event_data
     selected_speaker_countries <- reactive_values[["selected_speaker_countries"]]
     selected_event_countries <- reactive_values[["selected_event_countries"]]
     speaker_data_filtered <- filter_person_countries(speaker_data_filtered, selected_speaker_countries)
