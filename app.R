@@ -20,6 +20,13 @@ speaker_data <- read_csv(file = "speakers/speakers.csv", comment = "#", show_col
 event_data <- read_csv(file = "events/events.csv", comment = "#", show_col_types = FALSE) %>%
   mutate(across(c(event_type, event_year, event_city, event_country), as.factor))
 
+# join people data and event data ----
+
+people_event_data <- speaker_data %>%
+  left_join(
+    event_data,
+    by = c("event_type", "event_year"))
+
 # join event country to speaker data ----
 
 speaker_data <- speaker_data %>%
@@ -68,7 +75,7 @@ ui <- dashboardPage(
     ),
     fluidRow(
       box(
-        dataTableOutput("speaker_data_table"),
+        DTOutput("speaker_data_table"),
         title = "Table",
         width = 12
       )
@@ -85,6 +92,7 @@ server <- function(input, output) {
   reactive_values <- reactiveValues(
     selected_speaker_countries = character(0),
     selected_event_countries = character(0),
+    people_event_filtered = people_event_data,
     leaflet_map_center = list(
       lng = 2.3488,
       lat = 48.86471
@@ -168,15 +176,20 @@ server <- function(input, output) {
 
   # speaker data table ----
 
-  output$speaker_data_table <- renderDT({
-    speaker_data_filtered <- speaker_data %>%
-      select(-c(person_lat, person_long))
+  observe({
+    people_event_filtered <- people_event_data %>%
+      select(!c(ends_with("lat"), ends_with("long")))
     selected_speaker_countries <- reactive_values[["selected_speaker_countries"]]
     selected_event_countries <- reactive_values[["selected_event_countries"]]
-    speaker_data_filtered <- filter_person_countries(speaker_data_filtered, selected_speaker_countries)
-    speaker_data_filtered <- filter_event_countries(speaker_data_filtered, selected_event_countries)
+    people_event_filtered <- filter_person_countries(people_event_filtered, selected_speaker_countries)
+    people_event_filtered <- filter_event_countries(people_event_filtered, selected_event_countries)
+    reactive_values[["people_event_filtered"]] <- people_event_filtered
+  })
+
+  output$speaker_data_table <- renderDT({
+    people_event_filtered <- reactive_values[["people_event_filtered"]]
     datatable(
-      speaker_data_filtered,
+      people_event_filtered,
       filter = "top"
     )
   })
