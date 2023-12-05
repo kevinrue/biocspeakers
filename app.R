@@ -37,12 +37,12 @@ rm(event_data)
 
 # Choices ----
 
-plot_types <- c("Speakers" = "speakers", "Events" = "events")
+plot_types <- c("Keynotes" = "keynotes", "Events" = "events")
 
 # App ----
 
 ui <- dashboardPage(
-  dashboardHeader(title = "Speakers stats"),
+  dashboardHeader(title = "Events stats"),
   dashboardSidebar(
     actionButton("reset", "Reset selections", icon = icon("refresh"), width = "80%")
   ),
@@ -59,7 +59,7 @@ ui <- dashboardPage(
         leafletOutput("leaflet_map"),
         h4("Legend"),
         p(strong("Markers:"), "events"),
-        p(strong("Circles:"), "speakers"),
+        p(strong("Circles:"), "keynotes"),
         title = "Map",
         width = 6
       )
@@ -96,7 +96,7 @@ server <- function(input, output) {
   output$barplot <- renderPlot({
     plot_type <- input[["plot_type"]]
     # plot_types
-    if (identical(plot_type, "speakers")) {
+    if (identical(plot_type, "keynotes")) {
       gg <- speakers_barplot(people_event_data,
         speaker_countries = reactive_values[["selected_speaker_countries"]],
         event_countries = reactive_values[["selected_event_countries"]]
@@ -128,7 +128,7 @@ server <- function(input, output) {
     tagList(
       p("Click on the plots to add/remove items to the active selection."),
       p(
-        strong("Speakers: "),
+        strong("Keynotes: "),
         speaker_summary
       ),
       p(
@@ -195,7 +195,7 @@ server <- function(input, output) {
   })
 
   observeEvent(input[["barplot_click"]], {
-    if (identical(input[["plot_type"]], "speakers")) {
+    if (identical(input[["plot_type"]], "keynotes")) {
       click_country <- levels(people_event_data[["person_country"]])[round(input$barplot_click$x)]
       selected_speaker_countries <- reactive_values[["selected_speaker_countries"]]
       if (click_country %in% selected_speaker_countries) {

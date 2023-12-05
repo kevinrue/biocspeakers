@@ -63,7 +63,7 @@ speakers_barplot <- function(data, speaker_countries, event_countries) {
   }
   gg +
     labs(
-      title = "Speakers by country"
+      title = "Keynote speakers by country"
     ) +
     theme_bw() +
     theme(
