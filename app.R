@@ -176,15 +176,6 @@ server <- function(input, output) {
 
   # speaker data table ----
 
-  observe({
-    people_event_filtered <- people_event_data
-    selected_speaker_countries <- reactive_values[["selected_speaker_countries"]]
-    selected_event_countries <- reactive_values[["selected_event_countries"]]
-    people_event_filtered <- filter_person_countries(people_event_filtered, selected_speaker_countries)
-    people_event_filtered <- filter_event_countries(people_event_filtered, selected_event_countries)
-    reactive_values[["people_event_filtered"]] <- people_event_filtered
-  })
-
   output$speaker_data_table <- renderDT({
     people_event_filtered <- reactive_values[["people_event_filtered"]] %>%
       select(!c(ends_with("lat"), ends_with("long")))
@@ -192,6 +183,17 @@ server <- function(input, output) {
       people_event_filtered,
       filter = "top"
     )
+  })
+
+  # observe ----
+
+  observe({
+    people_event_filtered <- people_event_data
+    selected_speaker_countries <- reactive_values[["selected_speaker_countries"]]
+    selected_event_countries <- reactive_values[["selected_event_countries"]]
+    people_event_filtered <- filter_person_countries(people_event_filtered, selected_speaker_countries)
+    people_event_filtered <- filter_event_countries(people_event_filtered, selected_event_countries)
+    reactive_values[["people_event_filtered"]] <- people_event_filtered
   })
 
   # observeEvent ----
