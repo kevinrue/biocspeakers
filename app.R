@@ -27,22 +27,13 @@ people_event_data <- speaker_data %>%
     event_data,
     by = c("event_type", "event_year"))
 
-# join event country to speaker data ----
+# remove original people data ----
 
-speaker_data <- speaker_data %>%
-  left_join(
-    event_data %>%
-      select(event_country, event_type, event_year),
-    by = c("event_type", "event_year"))
+rm(speaker_data)
 
-# join speaker countries to event data ----
+# remove original event data ----
 
-event_data <- event_data %>%
-  left_join(
-    speaker_data %>%
-      select(person_country, event_type, event_year),
-    by = c("event_type", "event_year")
-  )
+rm(event_data)
 
 # Choices ----
 
@@ -205,7 +196,7 @@ server <- function(input, output) {
 
   observeEvent(input[["barplot_click"]], {
     if (identical(input[["plot_type"]], "speakers")) {
-      click_country <- levels(speaker_data[["person_country"]])[round(input$barplot_click$x)]
+      click_country <- levels(people_event_data[["person_country"]])[round(input$barplot_click$x)]
       selected_speaker_countries <- reactive_values[["selected_speaker_countries"]]
       if (click_country %in% selected_speaker_countries) {
         selected_speaker_countries <- setdiff(selected_speaker_countries, click_country)
