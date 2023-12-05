@@ -106,12 +106,12 @@ server <- function(input, output) {
     plot_type <- input[["plot_type"]]
     # plot_types
     if (identical(plot_type, "speakers")) {
-      gg <- speakers_barplot(speaker_data,
+      gg <- speakers_barplot(people_event_data,
         speaker_countries = reactive_values[["selected_speaker_countries"]],
         event_countries = reactive_values[["selected_event_countries"]]
       )
     } else if (identical(plot_type, "events")) {
-      gg <- events_barplot(event_data,
+      gg <- events_barplot(people_event_data,
         speaker_countries = reactive_values[["selected_speaker_countries"]],
         event_countries = reactive_values[["selected_event_countries"]]
       )
