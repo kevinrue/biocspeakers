@@ -76,7 +76,9 @@ ui <- dashboardPage(
 
 server <- function(input, output) {
 
-  # Paris: 48.85341 2.3488
+  # Paris: lat 48.85341 lng 2.3488
+  # balance USA and Australia in frame: lat 22.91792 lng 10.01953
+  # max zoom out: lat 34.88593 lng 5.273438
 
   # reactive values ----
 
@@ -85,10 +87,10 @@ server <- function(input, output) {
     selected_event_countries = character(0),
     people_event_filtered = people_event_data,
     leaflet_map_center = list(
-      lng = 2.3488,
-      lat = 48.86471
+      lng = 5.273438,
+      lat = 34.88593
     ),
-    leaflet_map_zoom = 4L
+    leaflet_map_zoom = 1L
   )
 
   # barplot ----

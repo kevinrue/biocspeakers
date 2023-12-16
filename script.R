@@ -53,7 +53,7 @@ suppressWarnings(
   leaflet() %>%
     setView(lng = 2.3488, lat = 48.85341, zoom = 4) %>% # Paris: 48.85341 2.3488
     addTiles() %>%
-    addCircleMarkers(~long, ~lat, radius = 2, color =  label = ~as.character(institution), data = speaker_data)
+    addCircleMarkers(~long, ~lat, radius = 2, label = ~as.character(institution), data = speaker_data)
 )
 
 # proportion of speakers from each country ----
